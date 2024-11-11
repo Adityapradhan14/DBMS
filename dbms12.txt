@@ -1,0 +1,95 @@
+-- Creating Branch table
+CREATE TABLE Branch (
+    bname VARCHAR(50) PRIMARY KEY,
+    city VARCHAR(50)
+);
+
+-- Creating Customers table
+CREATE TABLE Customers (
+    cname VARCHAR(50) PRIMARY KEY,
+    city VARCHAR(50)
+);
+
+-- Creating Deposit table with foreign keys
+CREATE TABLE Deposit (
+    actno INT PRIMARY KEY,
+    cname VARCHAR(50),
+    bname VARCHAR(50),
+    amount DECIMAL(10, 2),
+    adate DATE,
+    FOREIGN KEY (cname) REFERENCES Customers(cname),
+    FOREIGN KEY (bname) REFERENCES Branch(bname)
+);
+
+-- Creating Borrow table with foreign keys
+CREATE TABLE Borrow (
+    loanno INT PRIMARY KEY,
+    cname VARCHAR(50),
+    bname VARCHAR(50),
+    amount DECIMAL(10, 2),
+    FOREIGN KEY (cname) REFERENCES Customers(cname),
+    FOREIGN KEY (bname) REFERENCES Branch(bname)
+);
+
+-- Inserting data into Branch table
+INSERT INTO Branch (bname, city) VALUES
+('NagpurBranch', 'Nagpur'),
+('BombayBranch', 'Bombay'),
+('DelhiBranch', 'Delhi');
+
+-- Inserting data into Customers table
+INSERT INTO Customers (cname, city) VALUES
+('Anil', 'Nagpur'),
+('Sunil', 'Bombay'),
+('Raj', 'Nagpur'),
+('Amit', 'Delhi');
+
+-- Inserting data into Deposit table
+INSERT INTO Deposit (actno, cname, bname, amount, adate) VALUES
+(101, 'Anil', 'NagpurBranch', 2000, '2023-01-10'),
+(102, 'Sunil', 'BombayBranch', 1500, '2023-02-15'),
+(103, 'Raj', 'NagpurBranch', 2500, '2023-03-20'),
+(104, 'Amit', 'DelhiBranch', 3000, '2023-04-25');
+
+-- Inserting data into Borrow table
+INSERT INTO Borrow (loanno, cname, bname, amount) VALUES
+(201, 'Anil', 'NagpurBranch', 3000),
+(202, 'Sunil', 'BombayBranch', 4000),
+(203, 'Raj', 'NagpurBranch', 3500),
+(204, 'Amit', 'DelhiBranch', 5000);
+
+select Customers.cname
+from Customers
+join Deposit on Customers.cname = Deposit.cname
+join Branch on Customers.city = Branch.city
+where Customers.city = "Bombay" and Branch.city = "Nagpur";
+
+select Customers.cname
+from Customers
+join Deposit on Customers.cname = Deposit.cname
+join Branch on Customers.city = Branch.city
+where Customers.city = Branch.city;
+
+select Customers.cname
+from Customers
+join Deposit on Customers.cname = Deposit.cname
+join Borrow on Customers.cname =  Borrow.cname
+where Deposit.cname = Borrow.cname and Customers.city = "Nagpur";
+
+select Borrow.cname
+from Deposit
+join Borrow on Deposit.cname = Borrow.cname
+where Borrow.amount > 2000 and Deposit.amount > 1000;
+
+select Customers.cname
+from Customers
+join Deposit on Customers.cname = Deposit.cname
+join Branch on Customers.city = Branch.city
+where Deposit.cname = "Sunil";
+
+CREATE INDEX idx_deposit_amount ON Deposit(amount);
+
+-- Query that can utilize the index
+SELECT * FROM Deposit WHERE amount > 1000;
+
+

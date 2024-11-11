@@ -1,0 +1,33 @@
+
+db.books.insertMany([
+    { title: "Book A", pages: 150 },
+    { title: "Book B", pages: 300 },
+    { title: "Book C", pages: 200 },
+    { title: "Book D", pages: 400 },
+    { title: "Book E", pages: 100 }
+   
+]);
+
+var mapFunction = function() {
+    if (this.pages < 250) {
+        emit("Small", 1);
+    } else {
+        emit("Big", 1);
+    }
+};
+
+var reduceFunction = function(key, values) {
+    return Array.sum(values);
+};
+
+db.books.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out: "book_size_counts" }
+);
+
+db.book_size_counts.find();
+
+
+
+

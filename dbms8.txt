@@ -1,0 +1,108 @@
+CREATE TABLE Employee (
+    emp_no INT PRIMARY KEY,
+    name VARCHAR(100),
+    skill VARCHAR(50),
+    pay_rate DECIMAL(10, 2)
+);
+
+CREATE TABLE Position (
+    posting_no INT PRIMARY KEY,
+    skill VARCHAR(50)
+);
+
+CREATE TABLE Duty_allocation (
+    posting_no INT,
+    emp_no INT,
+    day DATE,
+    shift VARCHAR(10),
+    FOREIGN KEY (posting_no) REFERENCES Position(posting_no),
+    FOREIGN KEY (emp_no) REFERENCES Employee(emp_no)
+);
+
+INSERT INTO Employee (emp_no, name, skill, pay_rate) VALUES
+(123459, 'Alice', 'Chef', 12.50),
+(123460, 'Bob', 'Chef', 15.00),
+(123461, 'Charlie', 'Manager', 20.00),
+(123462, 'Diana', 'Chef', 13.00),
+(123463, 'Eve', 'Waiter', 10.00),
+(123464, 'Frank', 'Waiter', 9.50),
+(123465, 'Grace', 'Chef', 14.50),
+(123466, 'Hannah', 'Manager', 21.00),
+(123467, 'Ian', 'Bartender', 11.00);
+
+INSERT INTO Position (posting_no, skill) VALUES
+(1, 'Chef'),
+(2, 'Waiter'),
+(3, 'Manager'),
+(4, 'Chef'),
+(5, 'Bartender');
+
+INSERT INTO Duty_allocation (posting_no, emp_no, day, shift) VALUES
+(1, 123459, '1986-04-01', 'Morning'),
+(2, 123463, '1986-04-01', 'Afternoon'),
+(3, 123461, '1986-04-01', 'Evening'),
+(4, 123460, '1986-04-02', 'Morning'),
+(5, 123467, '1986-04-02', 'Night'),
+(1, 123462, '1986-04-05', 'Afternoon'),
+(4, 123465, '1986-04-10', 'Morning');
+
+
+select *
+from Duty_allocation
+where emp_no = 123461;
+
+select Duty_allocation.shift
+from Employee
+join Duty_allocation on Employee.emp_no = Duty_allocation.emp_no
+where Employee.name = 'Bob';
+
+select Employee.name
+from Employee
+where pay_rate >= (
+    select pay_rate
+    from Employee
+    where name = 'Bob'
+);
+
+SELECT e1.name, e1.pay_rate
+FROM Employee e1
+WHERE e1.emp_no < 123460
+AND e1.pay_rate > (
+    SELECT MIN(e2.pay_rate)
+    FROM Employee e2
+    WHERE e2.emp_no >= 123460
+);
+
+
+select name
+from Employee
+where skill = 'Chef';
+
+select name, pay_rate
+from Employee
+order by pay_rate asc
+limit 1;
+
+SELECT emp_no
+FROM Duty_allocation
+GROUP BY emp_no
+HAVING COUNT(DISTINCT day) >= 2;
+
+SELECT DISTINCT Employee.name
+FROM Employee 
+JOIN Duty_allocation ON Employee.emp_no = Duty_allocation.emp_no
+WHERE Employee.skill = 'Chef';
+
+select emp_no, name
+from Employee
+where emp_no not in (
+    select emp_no
+    FROM Duty_allocation
+);
+
+SELECT shift, COUNT(DISTINCT emp_no)
+FROM Duty_allocation
+GROUP BY shift;
+
+
+

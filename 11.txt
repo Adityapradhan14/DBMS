@@ -1,0 +1,68 @@
+CREATE TABLE Customer (
+    CustID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Cust_Address VARCHAR(100),
+    Phone_no VARCHAR(15),
+    Email_ID VARCHAR(50),
+    Age INT
+);
+
+CREATE TABLE Branch (
+    Branch_ID INT PRIMARY KEY,
+    Branch_Name VARCHAR(50),
+    Address VARCHAR(100)
+);
+
+CREATE TABLE Account (
+    Account_no INT PRIMARY KEY,
+    Branch_ID INT,
+    CustID INT,
+    date_open DATE,
+    Account_type VARCHAR(20),
+    Balance DECIMAL(10, 2),
+    FOREIGN KEY (Branch_ID) REFERENCES Branch(Branch_ID),
+    FOREIGN KEY (CustID) REFERENCES Customer(CustID)
+);
+
+INSERT INTO Customer (CustID, Name, Cust_Address, Phone_no, Email_ID, Age) VALUES
+(1, 'Alice', '123 Main St', '1234567890', 'alice@example.com', 28),
+(2, 'Bob', '456 Market St', '1234567891', 'bob@example.com', 34),
+(3, 'Charlie', '789 Center St', '1234567892', 'charlie@example.com', 40),
+(4, 'David', '101 First Ave', '1234567893', 'david@example.com', 42),
+(5, 'Eva', '202 Second Ave', '1234567894', 'eva@example.com', 36);
+
+INSERT INTO Branch (Branch_ID, Branch_Name, Address) VALUES
+(1, 'Central Branch', 'New York'),
+(2, 'South Branch', 'San Francisco'),
+(3, 'East Branch', 'Chicago');
+
+INSERT INTO Account (Account_no, Branch_ID, CustID, date_open, Account_type, Balance) VALUES
+(1001, 1, 1, '2017-04-16', 'Saving Account', 50000.00),
+(1002, 2, 2, '2018-06-15', 'Checking Account', 30000.00),
+(1003, 3, 3, '2019-07-20', 'Saving Account', 60000.00),
+(1004, 1, 4, '2020-05-10', 'Loan Account', 80000.00),
+(1005, 2, 5, '2021-01-25', 'Saving Account', 45000.00);
+
+INSERT INTO Account (Account_no, Branch_ID, CustID, date_open, Account_type, Balance) VALUES
+(1001, 1, 1, '2017-04-16', 'Saving Account', 50000.00),
+(1002, 2, 2, '2018-06-15', 'Checking Account', 30000.00),
+(1003, 3, 3, '2019-07-20', 'Saving Account', 60000.00),
+(1004, 1, 4, '2020-05-10', 'Loan Account', 80000.00),
+(1005, 2, 5, '2021-01-25', 'Saving Account', 45000.00);
+
+CREATE INDEX idx_account_no ON Account(Account_no);
+
+CREATE VIEW Customer_Info AS
+SELECT CustID, Name, Cust_Address, Phone_no, Email_ID, Age
+FROM Customer
+WHERE Age < 45;
+
+UPDATE Account
+SET date_open = '2017-04-16'
+WHERE date_open IS NULL;
+
+ALTER TABLE Branch MODIFY Branch_ID INT AUTO_INCREMENT;
+
+CREATE VIEW Branch_info AS
+SELECT * FROM Branch;
+

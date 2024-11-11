@@ -1,0 +1,91 @@
+-- your code goes here
+CREATE TABLE Customer (
+    CustID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Cust_Address VARCHAR(100),
+    Phone_no VARCHAR(15),
+    Email_ID VARCHAR(50),
+    Age INT
+);
+
+CREATE TABLE Branch (
+    Branch_ID INT PRIMARY KEY,
+    Branch_Name VARCHAR(50),
+    Address VARCHAR(100)
+);
+
+CREATE TABLE Account (
+    Account_no INT PRIMARY KEY,
+    Branch_ID INT,
+    CustID INT,
+    open_date DATE,
+    Account_type VARCHAR(20),
+    Balance DECIMAL(10, 2),
+    FOREIGN KEY (Branch_ID) REFERENCES Branch(Branch_ID),
+    FOREIGN KEY (CustID) REFERENCES Customer(CustID)
+);
+
+INSERT INTO Customer (CustID, Name, Cust_Address, Phone_no, Email_ID, Age) VALUES
+(101, 'Alice', 'Mumbai', '1234567890', 'alice@example.com', 28),
+(102, 'Bob', 'Delhi', '1234567891', 'bob@example.com', 34),
+(103, 'Charlie', 'Pune', '1234567892', 'charlie@example.com', 25),
+(104, 'David', 'Chennai', '1234567893', 'david@example.com', 40);
+
+INSERT INTO Branch (Branch_ID, Branch_Name, Address) VALUES
+(1, 'Mumbai Central', 'Mumbai'),
+(2, 'Delhi Main', 'Delhi'),
+(3, 'Pune South', 'Pune');
+
+INSERT INTO Account (Account_no, Branch_ID, CustID, open_date, Account_type, Balance) VALUES
+(1001, 1, 101, '2018-08-16', 'Saving', 50000.00),
+(1002, 2, 102, '2018-02-16', 'Loan', 150000.00),
+(1003, 3, 103, '2018-08-16', 'Saving', 30000.00),
+(1004, 1, 104, '2018-02-16', 'Loan', 100000.00);
+
+
+SELECT * FROM Customer;
+SELECT * FROM Account;
+SELECT * FROM Branch;
+
+CREATE VIEW SavingAccount AS
+SELECT Customer.CustID, Customer.Name, Customer.Cust_Address, Customer.Phone_no, Customer.Email_ID, Customer.Age, Account.open_date
+FROM Customer
+JOIN Account ON Customer.CustID = Account.CustID
+WHERE Account.open_date = '2018-08-16' AND Account.Account_type = 'Saving';
+
+SELECT * FROM SavingAccount;
+
+
+
+UPDATE Customer
+SET Cust_Address = 'Pune'
+WHERE CustID = 103;
+
+SELECT * FROM Customer WHERE CustID = 103;
+
+
+
+CREATE VIEW LoanAccount AS
+SELECT Customer.CustID, Customer.Name, Customer.Cust_Address, Customer.Phone_no, Customer.Email_ID, Customer.Age, Account.open_date
+FROM Customer
+JOIN Account ON Customer.CustID = Account.CustID
+WHERE Account.open_date = '2018-02-16' AND Account.Account_type = 'Loan';
+
+SELECT * FROM LoanAccount;
+
+
+
+CREATE INDEX idx_CustID ON Customer(CustID);
+
+
+CREATE INDEX idx_BranchID ON Branch(Branch_ID);
+
+
+ALTER TABLE Customer MODIFY CustID INT AUTO_INCREMENT;
+
+
+CREATE VIEW Cust_info AS
+SELECT * FROM Branch;
+
+SELECT * FROM Cust_info;
+

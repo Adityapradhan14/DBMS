@@ -1,0 +1,58 @@
+db.Teachers.insertMany([
+    { Tname: "Praveen", dno: 101, dname: "computer", experience: "8 years", salary: 12000, date_of_joining: new Date("2015-06-12") },
+    { Tname: "Rajesh", dno: 102, dname: "IT", experience: "5 years", salary: 10000, date_of_joining: new Date("2018-03-10") },
+    { Tname: "Amit", dno: 103, dname: "E&TC", experience: "7 years", salary: 11000, date_of_joining: new Date("2016-08-08") }
+])
+
+db.Students.insertMany([
+    { Sname: "John", roll_no: 1, class: "SE" },
+    { Sname: "xyz", roll_no: 2, class: "TE" },
+    { Sname: "Alex", roll_no: 3, class: "BE" }
+])
+
+
+db.Teachers.find()
+
+db.Teachers.find({ dname: "computer" })
+
+db.Teachers.find({ dname: { $in: ["computer", "IT", "E&TC"] } })
+
+db.Teachers.find({
+    dname: { $in: ["computer", "IT", "E&TC"] },
+    salary: { $gte: 10000 }
+})
+
+db.Students.find({
+    $or: [{ roll_no: 2 }, { Sname: "xyz" }]
+})
+
+db.Teachers.update(
+    { Tname: "Praveen" },
+    { $set: { experience: "10 years" } },
+    { upsert: true }
+)
+
+db.Teachers.updateMany(
+    { dname: "IT" },
+    { $set: { dname: "COMP" } }
+)
+
+db.Teachers.find({}, { Tname: 1, experience: 1, _id: 0 })
+
+db.Teachers.save({
+    Tname: "NewTeacher",
+    dno: 104,
+    dname: "IT",
+    experience: "3 years",
+    salary: 9000,
+    date_of_joining: new Date("2020-01-01")
+})
+
+let teacher = db.Teachers.findOne({ Tname: "Rajesh" })
+teacher.dname = "IT"
+db.Teachers.save(teacher)
+
+db.Teachers.deleteMany({ dname: "IT" })
+
+db.Teachers.find().sort({ Tname: 1 }).limit(3).pretty()
+

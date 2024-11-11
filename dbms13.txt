@@ -1,0 +1,137 @@
+-- your code goes here
+-- Create Publisher table
+CREATE TABLE Publisher (
+    pid INT PRIMARY KEY,
+    pname VARCHAR(50),
+    address VARCHAR(100),
+    state VARCHAR(50),
+    phone VARCHAR(15),
+    emailid VARCHAR(50)
+);
+
+-- Create Book table
+CREATE TABLE Book (
+    isbn VARCHAR(13) PRIMARY KEY,
+    book_title VARCHAR(100),
+    category VARCHAR(50),
+    price DECIMAL(10, 2),
+    copyright_date DATE,
+    year INT,
+    page_count INT,
+    pid INT,
+    FOREIGN KEY (pid) REFERENCES Publisher(pid)
+);
+
+-- Create Author table
+CREATE TABLE Author (
+    aid INT PRIMARY KEY,
+    aname VARCHAR(50),
+    state VARCHAR(50),
+    city VARCHAR(50),
+    zip VARCHAR(10),
+    phone VARCHAR(15),
+    url VARCHAR(100)
+);
+
+-- Create Author_Book table
+CREATE TABLE Author_Book (
+    aid INT,
+    isbn VARCHAR(13),
+    FOREIGN KEY (aid) REFERENCES Author(aid),
+    FOREIGN KEY (isbn) REFERENCES Book(isbn),
+    PRIMARY KEY (aid, isbn)
+);
+
+-- Create Review table
+CREATE TABLE Review (
+    rid INT PRIMARY KEY,
+    isbn VARCHAR(13),
+    rating INT,
+    FOREIGN KEY (isbn) REFERENCES Book(isbn)
+);
+
+-- Inserting data into Publisher table
+INSERT INTO Publisher (pid, pname, address, state, phone, emailid) VALUES
+(1, 'MEHTA', '123 Main St', 'Maharashtra', '9876543210', 'mehta@example.com'),
+(2, 'SINGH', '456 High St', 'Delhi', '8765432109', 'singh@example.com');
+
+-- Inserting data into Book table
+INSERT INTO Book (isbn, book_title, category, price, copyright_date, year, page_count, pid) VALUES
+('9780143127796', 'Book A', 'Fiction', 300.00, '2021-05-01', 2021, 150, 1),
+('9780143127802', 'Book B', 'Non-Fiction', 500.00, '2019-07-01', 2019, 95, 2);
+
+-- Inserting data into Author table
+INSERT INTO Author (aid, aname, state, city, zip, phone, url) VALUES
+(1, 'CHETAN BHAGAT', 'Maharashtra', 'Mumbai', '400001', '1234567890', 'http://chetanbhagat.com'),
+(2, 'John Doe', 'Maharashtra', 'Pune', '411001', '2345678901', 'http://johndoe.com'),
+(3, 'Korth', 'Delhi', 'Delhi', '110001', '3456789012', 'http://korth.com');
+
+-- Inserting data into Author_Book table
+INSERT INTO Author_Book (aid, isbn) VALUES
+(1, '9780143127796'),
+(2, '9780143127802');
+
+-- Inserting data into Review table
+INSERT INTO Review (rid, isbn, rating) VALUES
+(1, '9780143127796', 5),
+(2, '9780143127802', 4);
+
+
+SELECT city, phone, url
+FROM Author
+WHERE aname = 'CHETAN BHAGAT';
+
+SELECT b.book_title, r.rid, r.rating
+FROM Book b
+JOIN Review r ON b.isbn = r.isbn;
+
+SELECT b.book_title, b.price, a.aname, a.url
+FROM Book b
+JOIN Publisher p ON b.pid = p.pid
+JOIN Author_Book ab ON b.isbn = ab.isbn
+JOIN Author a ON ab.aid = a.aid
+WHERE p.pname = 'MEHTA';
+
+UPDATE Publisher
+SET phone = '123456'
+WHERE pname = 'MEHTA';
+
+SELECT p.pname, 
+       AVG(b.price) AS avg_price, 
+       MAX(b.price) AS max_price, 
+       MIN(b.price) AS min_price
+FROM Book b
+JOIN Publisher p ON b.pid = p.pid
+GROUP BY p.pname;
+
+DELETE FROM Book
+WHERE page_count < 100;
+
+SELECT *
+FROM Author
+WHERE city = 'Pune' AND aname LIKE 'C%';
+
+SELECT *
+FROM Author
+WHERE city = (SELECT city FROM Author WHERE aname = 'Korth');
+
+CREATE PROCEDURE UpdatePageCount (IN book_isbn VARCHAR(13), IN new_page_count INT)
+BEGIN
+    UPDATE Book
+    SET page_count = new_page_count
+    WHERE isbn = book_isbn;
+END;
+
+
+
+CREATE FUNCTION GetBookPrice (book_isbn VARCHAR(13)) 
+RETURNS DECIMAL(10, 2)
+DETERMINISTIC
+BEGIN
+    DECLARE book_price DECIMAL(10, 2);
+    SELECT price INTO book_price
+    FROM Book
+    WHERE isbn = book_isbn;
+    RETURN book_price;
+END;
+

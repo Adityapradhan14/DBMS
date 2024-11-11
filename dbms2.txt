@@ -1,0 +1,106 @@
+CREATE TABLE employee (
+    emp_name VARCHAR(50) PRIMARY KEY,
+    street VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE works (
+    emp_name VARCHAR(50),
+    company_name VARCHAR(50),
+    salary DECIMAL(10, 2),
+    FOREIGN KEY (emp_name) REFERENCES employee(emp_name)
+);
+
+CREATE TABLE company (
+    company_name VARCHAR(50),
+    city VARCHAR(50),
+    PRIMARY KEY (company_name, city)  -- Use composite key to allow same company in different cities
+);
+
+CREATE TABLE manages (
+    emp_name VARCHAR(50),
+    manager_name VARCHAR(50),
+    FOREIGN KEY (emp_name) REFERENCES employee(emp_name),
+    FOREIGN KEY (manager_name) REFERENCES employee(emp_name)
+);
+
+-- Insert data into the employee table
+INSERT INTO employee (emp_name, street, city) VALUES
+('Alice', 'Maple Street', 'New York'),
+('Bob', 'Oak Avenue', 'Los Angeles'),
+('Charlie', 'Pine Road', 'Chicago'),
+('Diana', 'Birch Lane', 'New York'),
+('Eve', 'Cedar Street', 'San Francisco');
+
+-- Insert data into the works table
+INSERT INTO works (emp_name, company_name, salary) VALUES
+('Alice', 'First Bank Corporation', 12000),
+('Bob', 'First Bank Corporation', 9000),
+('Charlie', 'Tech Solutions', 15000),
+('Diana', 'Small Bank Corporation', 11000),
+('Eve', 'First Bank Corporation', 13000);
+
+-- Insert data into the company table with unique company names per city
+INSERT INTO company (company_name, city) VALUES
+('First Bank Corporation', 'New York'),
+('First Bank Corporation', 'San Francisco'),
+('Tech Solutions', 'Chicago'),
+('Small Bank Corporation', 'Los Angeles'),
+('Small Bank Corporation', 'New York');
+
+-- Insert data into the manages table
+INSERT INTO manages (emp_name, manager_name) VALUES
+('Alice', 'Charlie'),
+('Bob', 'Diana'),
+('Charlie', 'Eve'),
+('Diana', 'Charlie'),
+('Eve', 'Alice');
+
+
+SELECT emp_name
+FROM works
+WHERE company_name = 'First Bank Corporation';
+
+SELECT emp_name
+FROM works
+WHERE company_name <> 'First Bank Corporation';
+
+SELECT company_name
+FROM works
+GROUP BY company_name
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+
+SELECT company_name
+FROM company
+WHERE city IN (
+    SELECT city
+    FROM company
+    WHERE company_name = 'Small Bank Corporation'
+);
+
+SELECT *
+FROM works
+WHERE salary > 10000;
+
+update works
+set salary = salary * 1.10
+WHERE company_name = 'First Bank Corporation';
+
+SELECT emp_name, manager_name
+FROM manages;
+
+SELECT employee.emp_name, street, city
+FROM employee
+join works on employee.emp_name = works.emp_name
+where company_name = 'First Bank Corporation';
+
+SELECT company_name
+FROM works
+GROUP BY company_name
+HAVING AVG(salary) > (
+    SELECT AVG(salary)
+    FROM works
+    WHERE company_name = 'First Bank Corporation'
+);
+

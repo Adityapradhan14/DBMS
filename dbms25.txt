@@ -1,0 +1,37 @@
+var mapFunction = function() {
+    emit(this.gender, 1);  // Emit gender as key and 1 as value to count occurrences
+};
+
+var reduceFunction = function(key, values) {
+    return Array.sum(values);  // Sum the values (1's) for each gender
+};
+
+db.users.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out: "gender_count" }  // Output the result to a new collection named "gender_count"
+)
+
+
+
+ // Split the hobbies string into an array
+   // Emit each hobby with value 1
+   // Trim spaces and emit hobby as key
+var mapFunction = function() {
+    var hobbiesArray = this.hobbies.split(",");
+    
+    for (var i = 0; i < hobbiesArray.length; i++) {
+        emit(hobbiesArray[i].trim(), 1);  
+    }
+};
+
+var reduceFunction = function(key, values) {
+    return Array.sum(values);  
+};
+
+db.users.mapReduce(
+    mapFunction,
+    reduceFunction,
+    { out: "hobby_count" }  
+)
+

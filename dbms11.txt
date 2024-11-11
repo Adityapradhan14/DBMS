@@ -1,0 +1,86 @@
+-- your code goes here
+-- Creating Branch table
+CREATE TABLE Branch (
+    bname VARCHAR(50) PRIMARY KEY,
+    city VARCHAR(50)
+);
+
+-- Creating Customers table
+CREATE TABLE Customers (
+    cname VARCHAR(50) PRIMARY KEY,
+    city VARCHAR(50)
+);
+
+-- Creating Deposit table with foreign keys
+CREATE TABLE Deposit (
+    actno INT PRIMARY KEY,
+    cname VARCHAR(50),
+    bname VARCHAR(50),
+    amount DECIMAL(10, 2),
+    adate DATE,
+    FOREIGN KEY (cname) REFERENCES Customers(cname),
+    FOREIGN KEY (bname) REFERENCES Branch(bname)
+);
+
+-- Creating Borrow table with foreign keys
+CREATE TABLE Borrow (
+    loanno INT PRIMARY KEY,
+    cname VARCHAR(50),
+    bname VARCHAR(50),
+    amount DECIMAL(10, 2),
+    FOREIGN KEY (cname) REFERENCES Customers(cname),
+    FOREIGN KEY (bname) REFERENCES Branch(bname)
+);
+
+
+-- Inserting data into Branch table
+INSERT INTO Branch (bname, city) VALUES
+('Downtown', 'Mumbai'),
+('Central', 'Delhi'),
+('Karolbagh', 'Pune');
+
+-- Inserting data into Customers table
+INSERT INTO Customers (cname, city) VALUES
+('Anil', 'Pune'),
+('Sunil', 'Delhi'),
+('Raj', 'Mumbai');
+
+-- Inserting data into Deposit table
+INSERT INTO Deposit (actno, cname, bname, amount, adate) VALUES
+(101, 'Anil', 'Karolbagh', 5000, '2023-01-10'),
+(102, 'Sunil', 'Downtown', 7000, '2023-02-15'),
+(103, 'Raj', 'Central', 3000, '2023-03-20');
+
+-- Inserting data into Borrow table
+INSERT INTO Borrow (loanno, cname, bname, amount) VALUES
+(201, 'Anil', 'Karolbagh', 6000),
+(202, 'Sunil', 'Downtown', 8000),
+(203, 'Raj', 'Central', 2000);
+
+
+select adate
+from Deposit
+where cname = "Anil";
+
+select cname
+from Customers
+where city="Pune";
+
+select city
+from Borrow
+join Customers on Borrow.cname = Customers.cname
+where Borrow.bname = "Karolbagh";
+
+select count(*)
+from Customers;
+
+delete from Customers
+where cname = "Sunil";
+
+create view my_view as
+select *
+from Branch
+join Customers on Branch.city = Customers.city;
+
+select *
+from my_view;

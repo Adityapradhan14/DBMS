@@ -1,0 +1,60 @@
+db.Book.insertMany([
+    { Title: "Book A", Author_name: "Author 1", Borrowed_status: "True", Price: 400 },
+    { Title: "Book B", Author_name: "Author 1", Borrowed_status: "False", Price: 250 },
+    { Title: "Book C", Author_name: "Author 2", Borrowed_status: "True", Price: 320 },
+    { Title: "Book D", Author_name: "Author 3", Borrowed_status: "True", Price: 150 },
+    { Title: "Book E", Author_name: "Author 2", Borrowed_status: "False", Price: 500 },
+    
+]);
+
+var mapFunction1 = function() {
+    emit(this.Author_name, this.Title);
+};
+
+var reduceFunction1 = function(key, values) {
+    return values;
+};
+
+db.Book.mapReduce(
+    mapFunction1,
+    reduceFunction1,
+    { out: "author_wise_books" }
+);
+
+
+
+var mapFunction2 = function() {
+    if (this.Borrowed_status === "True") {
+        emit(this.Author_name, this.Title);
+    }
+};
+
+var reduceFunction2 = function(key, values) {
+    return values;
+};
+
+db.Book.mapReduce(
+    mapFunction2,
+    reduceFunction2,
+    { out: "author_wise_borrowed_books" }
+);
+
+
+
+
+var mapFunction3 = function() {
+    if (this.Price > 300) {
+        emit(this.Author_name, this.Title);
+    }
+};
+
+var reduceFunction3 = function(key, values) {
+    return values;
+};
+
+db.Book.mapReduce(
+    mapFunction3,
+    reduceFunction3,
+    { out: "author_wise_expensive_books" }
+);
+

@@ -1,0 +1,105 @@
+CREATE TABLE Hotel (
+    HotelNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    City VARCHAR(50)
+);
+
+CREATE TABLE Room (
+    RoomNo INT,
+    HotelNo INT,
+    Type VARCHAR(50),
+    Price DECIMAL(10, 2),
+    PRIMARY KEY (RoomNo, HotelNo),
+    FOREIGN KEY (HotelNo) REFERENCES Hotel(HotelNo)
+);
+
+CREATE TABLE Guest (
+    GuestNo INT PRIMARY KEY,
+    GuestName VARCHAR(100),
+    GuestAddress VARCHAR(255)
+);
+
+CREATE TABLE Booking (
+    HotelNo INT,
+    GuestNo INT,
+    DateFrom DATE,
+    DateTo DATE,
+    RoomNo INT,
+    PRIMARY KEY (HotelNo, GuestNo, DateFrom),
+    FOREIGN KEY (HotelNo, RoomNo) REFERENCES Room(HotelNo, RoomNo),
+    FOREIGN KEY (GuestNo) REFERENCES Guest(GuestNo)
+);
+
+
+-- Inserting data into Hotel table
+INSERT INTO Hotel (HotelNo, Name, City) VALUES
+(1, 'Grosvenor Hotel', 'London'),
+(2, 'Royal Hotel', 'New York'),
+(3, 'Hilton', 'Paris');
+
+-- Inserting data into Room table
+INSERT INTO Room (RoomNo, HotelNo, Type, Price) VALUES
+(101, 1, 'Single', 150.00),
+(102, 1, 'Double', 200.00),
+(201, 2, 'Single', 100.00),
+(202, 2, 'Double', 250.00),
+(301, 3, 'Single', 120.00),
+(302, 3, 'Family', 180.00),
+(303, 3, 'Double', 35.00);  -- This entry is for the room with price below £40
+
+-- Inserting data into Guest table
+INSERT INTO Guest (GuestNo, GuestName, GuestAddress) VALUES
+(1, 'John Doe', '123 Maple St, London'),
+(2, 'Jane Smith', '456 Oak Ave, New York'),
+(3, 'Alice Johnson', '789 Pine Rd, Paris');
+
+-- Inserting data into Booking table
+INSERT INTO Booking (HotelNo, GuestNo, DateFrom, DateTo, RoomNo) VALUES
+(1, 1, '2024-04-01', '2024-04-10', 101),
+(1, 2, '2024-04-05', '2024-04-15', 102),
+(2, 3, '2024-04-01', '2024-04-07', 201);
+
+
+select sum(price)
+from Room
+where Type = 'Double';
+
+select *
+from Room
+join Hotel on Room.HotelNo = Hotel.HotelNo
+left join Booking on Room.RoomNo = Booking.RoomNo
+left join Guest on Booking.GuestNo = Guest.GuestNo
+where Hotel.Name = 'Grosvenor Hotel';
+
+SELECT h.Name AS HotelName, COUNT(b.GuestNo) / 30.0 AS AvgBookingsPerDay
+FROM Booking b
+JOIN Hotel h ON b.HotelNo = h.HotelNo -- wrong code part
+WHERE MONTH(b.DateFrom) = 4
+GROUP BY h.Name;
+
+
+-- Create an index on the City field of the Hotel table
+CREATE INDEX idx_city ON Hotel(City);
+-- Query that uses the index
+SELECT * FROM Hotel WHERE City = 'London';
+
+
+select *
+from Hotel;
+
+select *
+from Hotel
+where City = 'London';
+
+update Room
+set price = price * 1.05;
+
+select count(RoomNo)
+from Hotel
+join Room on Hotel.HotelNo = Room.HotelNo
+where City = 'London';
+
+select *
+from Room
+where ( Type = 'Double' or Type = 'Family' ) and price < 40.00
+order by price asc
